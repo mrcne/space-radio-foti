@@ -1,5 +1,6 @@
 {
-  "name": "app",
+  "name": "space-radio-foti",
+  "homepage": "/space-radio-foti",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
