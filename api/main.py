@@ -1,9 +1,23 @@
-from datetime import datetime
-from random import randint
-
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from utils.sample import get_sample_spots, get_sample_timestamps
 
 app = FastAPI()
+
+origins = [
+    "http://mrcne.github.io/space-radio-foti",
+    "https://mrcne.github.io/space-radio-foti",
+    "http://localhost",
+    "http://localhost:3000",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.get("/")
@@ -11,23 +25,38 @@ async def root():
     return {"message": "Space Apps!"}
 
 
+@app.get("/model/tec")
+async def model_tec(timestamp: int = None):
+    return get_sample_spots()
+
+@app.get("/model/timestamps")
+async def model_tec():
+    return get_sample_timestamps()
+
+
+@app.get("/iss/tec")
+async def model_tec(timestamp: int = None):
+    return get_sample_spots()
+
+@app.get("/iss/timestamps")
+async def model_tec():
+    return get_sample_timestamps()
+
+
+@app.get("/ham/tec")
+async def model_tec(timestamp: int = None):
+    return get_sample_spots()
+
+@app.get("/ham/timestamps")
+async def model_tec():
+    return get_sample_timestamps()
+
+
 @app.get("/sample/spots")
-async def say_hello():
-    current_lat = 43.51095343289946
-    initial_long = current_long = 0.3216334542913657
-    max_lat = 58.14334491675913
-    max_long = 26.819192405669234
-    timestamp = datetime.now()
+async def sample_spots(timestamp: int = None):
+    return get_sample_spots()
 
-    resolution = 5
 
-    result = []
-    # loop until max_lat and max_long with specified resolution
-    while current_lat < max_lat:
-        while current_long < max_long:
-            value = randint(1, 80)
-            result.append({"lat": current_lat, "long": current_long, "timestamp": timestamp, "value": value})
-            current_long += resolution
-        current_lat += resolution
-        current_long = initial_long
-    return result
+@app.get("/sample/spots_eu")
+async def sample_spots_eu():
+    return get_sample_spots(43.51095343289946, 58.14334491675913, 0.3216334542913657, 26.819192405669234, 5)
