@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.js": "/space-radio-foti/static/js/main.3baf885f.js",
+    "main.js": "/space-radio-foti/static/js/main.486f0d94.js",
     "static/js/787.d66302f7.chunk.js": "/space-radio-foti/static/js/787.d66302f7.chunk.js",
-    "static/media/ionosphere_mapTEC.jpeg": "/space-radio-foti/static/media/ionosphere_mapTEC.1f2fd2f1cb180a9e3b18.jpeg",
+    "static/media/logo.jpeg": "/space-radio-foti/static/media/logo.6107fc76fa5168af54fb.jpeg",
     "index.html": "/space-radio-foti/index.html",
-    "main.3baf885f.js.map": "/space-radio-foti/static/js/main.3baf885f.js.map",
+    "main.486f0d94.js.map": "/space-radio-foti/static/js/main.486f0d94.js.map",
     "787.d66302f7.chunk.js.map": "/space-radio-foti/static/js/787.d66302f7.chunk.js.map"
   },
   "entrypoints": [
-    "static/js/main.3baf885f.js"
+    "static/js/main.486f0d94.js"
   ]
 }
