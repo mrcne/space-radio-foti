@@ -72,8 +72,8 @@ async function renderVisualization(
 
   context.beginPath();
   pathGenerator(land);
-  context.fillStyle = "#000";
-  context.fill();
+  context.strokeStyle = "#000";
+  context.stroke();
 
   context.beginPath();
   pathGenerator(sphere as GeoPermissibleObjects);
