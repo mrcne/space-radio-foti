@@ -20,6 +20,8 @@ export default function useData(
 
   if (dataset === Dataset.ham) {
     getter = getHAMData;
+  } else if (dataset === Dataset.iss) {
+    getter = getISSData;
   } else {
     console.error("This dataset is not yet supported");
     getter = getNoData;
@@ -40,7 +42,14 @@ async function getHAMData() {
     "https://space-radio-foti.herokuapp.com/sample/spots"
   );
   const json = await response.json();
+  return json;
+}
 
+async function getISSData() {
+  const response = await fetch(
+    "https://space-radio-foti.herokuapp.com/iss/tec"
+  );
+  const json = await response.json();
   return json;
 }
 

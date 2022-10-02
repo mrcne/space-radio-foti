@@ -26,7 +26,7 @@ const theme = {
 
 function App() {
   // const [showSidebar, setShowSidebar] = useState(false);
-  const [selectedDataset, setSelectedDataset] = useState(Dataset.ham);
+  const [selectedDataset, setSelectedDataset] = useState(Dataset.iss);
 
   return (
     <div className="App">

@@ -86,9 +86,10 @@ async function renderVisualization(
 
   // This is likely a very inefficient way to do this.
   for (let datum of data) {
+    console.log(datum);
     const geoPoint: Point = {
       type: "Point",
-      coordinates: [datum.lat, datum.long],
+      coordinates: [datum.long, datum.lat],
     };
     context.beginPath();
     pathGenerator(geoPoint);
