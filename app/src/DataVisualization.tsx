@@ -7,18 +7,20 @@ import {
 import { Box } from "grommet";
 import { useEffect, useState } from "react";
 import { feature } from "topojson";
-import { MultiPoint } from "geojson";
+import { MultiPoint, Point } from "geojson";
+import * as d3 from "d3";
+import { interpolateSpectral } from "d3";
 
 export default function DataVisualization({ size = 960 }: { size?: number }) {
-  const [points, setPoints] = useState<MultiPoint>();
+  const [data, setData] = useState<Array<ElectronDensityDatum>>();
 
   useEffect(() => {
-    getPoints().then((points) => setPoints(points));
+    getData().then((data) => setData(data));
   }, []);
 
   useEffect(() => {
-    if (points) renderVisualization(size, points);
-  }, [points, size]);
+    if (data) renderVisualization(size, data);
+  }, [data, size]);
 
   return (
     <Box flex align="center" justify="center">
@@ -27,26 +29,46 @@ export default function DataVisualization({ size = 960 }: { size?: number }) {
   );
 }
 
-async function getPoints() {
-  // const response = await fetch(
-  //   "https://space-radio-foti.herokuapp.com/sample/spots"
-  // );
-  // const json = await response.json();
-  // return json;
+type ElectronDensityDatum = {
+  lat: number;
+  long: number;
+  timestamp: string;
+  value: number;
+};
 
-  const markers: MultiPoint = {
-    type: "MultiPoint",
-    coordinates: [
-      [100.0, 0.0],
-      [101.0, 1.0],
-    ],
-  };
+async function getData(): Promise<Array<ElectronDensityDatum>> {
+  const response = await fetch(
+    "https://space-radio-foti.herokuapp.com/sample/spots"
+  );
+  const json = await response.json();
 
-  return markers;
+  // const markers: MultiPoint = {
+  //   type: "MultiPoint",
+  //   coordinates: [
+  //     [100.0, 0.0],
+  //     [101.0, 1.0],
+  //     [120.0, 92.0],
+  //     [1.0, 180.0],
+  //     [80.0, 0.0],
+  //     [201.0, 7.0],
+  //     [174.0, 0.0],
+  //   ],
+  // };
+
+  // const coordinates = json.map((spot: Spot) => [spot.lat, spot.long]);
+  // const markers: MultiPoint = {
+  //   type: "MultiPoint",
+  //   coordinates: coordinates,
+  // };
+
+  return json;
 }
 
 // https://observablehq.com/@d3/solar-terminator?collection=@d3/d3-geo
-async function renderVisualization(size: number, points: MultiPoint) {
+async function renderVisualization(
+  size: number,
+  data: Array<ElectronDensityDatum>
+) {
   const response = await fetch(
     "https://cdn.jsdelivr.net/npm/world-atlas@2/land-50m.json"
   );
@@ -88,10 +110,22 @@ async function renderVisualization(size: number, points: MultiPoint) {
   context.strokeStyle = "#000";
   context.stroke();
 
-  context.beginPath();
-  pathGenerator(points);
-  context.fillStyle = "#ee1b1b";
-  context.fill();
+  const colorGenerator = d3
+    .scaleSequential(interpolateSpectral)
+    .domain([0, 100]);
+
+  // This is likely a very inefficient way to do this.
+  for (let datum of data) {
+    const geoPoint: Point = {
+      type: "Point",
+      coordinates: [datum.lat, datum.long],
+    };
+    context.beginPath();
+    pathGenerator(geoPoint);
+    const color = colorGenerator(datum.value) as unknown;
+    context.fillStyle = color as string;
+    context.fill();
+  }
 }
 
 // https://developer.mozilla.org/en-US/docs/Web/API/Window/devicePixelRatio#correcting_resolution_in_a_canvas

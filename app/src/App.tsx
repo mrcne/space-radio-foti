@@ -1,6 +1,21 @@
 import React, { useState } from "react";
-import { Box, Button, Heading, Grommet, Collapsible } from "grommet";
-import { CirclePlay, Menu, Next, Previous } from "grommet-icons";
+import {
+  Box,
+  Button,
+  Heading,
+  Grommet,
+  Collapsible,
+  Select,
+  Tip,
+} from "grommet";
+import {
+  CirclePlay,
+  Download,
+  Menu,
+  Next,
+  Previous,
+  Upload,
+} from "grommet-icons";
 import DataVisualization from "./DataVisualization";
 
 const theme = {
@@ -83,12 +98,35 @@ function Sidebar(props: any) {
 
 function Controls(props: any) {
   return (
-    <Box align="center" justify="center" background="brand" pad="1rem">
-      <code>2022-09-28 18:10:00 UTC</code>
-      <Box direction="row">
-        <Button icon={<Previous />} />
-        <Button icon={<CirclePlay size="large" />} />
-        <Button icon={<Next />} />
+    <Box
+      align="center"
+      justify="between"
+      background="brand"
+      pad="1rem"
+      direction="row"
+    >
+      <Box width="200px" justify="start">
+        <Select
+          options={["HAM", "ISS", "Model"]}
+          value={"HAM"}
+          // onChange={({ option }) => setValue(option)}
+        />
+      </Box>
+      <Box align="center">
+        <code>2022-09-28 18:10:00 UTC</code>
+        <Box direction="row">
+          <Button icon={<Previous />} />
+          <Button icon={<CirclePlay size="large" />} />
+          <Button icon={<Next />} />
+        </Box>
+      </Box>
+      <Box direction="row" width="200px" justify="end">
+        <Tip content="Download">
+          <Button icon={<Download />} />
+        </Tip>
+        <Tip content="Upload">
+          <Button icon={<Upload />} title="Upload" />
+        </Tip>
       </Box>
     </Box>
   );
