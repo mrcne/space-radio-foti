@@ -116,7 +116,7 @@ function Controls({
     >
       <Box width="200px" justify="start">
         <Select
-          options={["HAM", "ISS", "NeQuickG"]}
+          options={["HAM", "ISS", "NeQuickG", "Sample"]}
           value={selectedDataset}
           onChange={({ option }) => setSelectedDataset(option)}
         />

@@ -4,6 +4,7 @@ export enum Dataset {
   ham = "HAM",
   iss = "ISS",
   model = "NeQuickG",
+  sample = "Sample",
 }
 
 export type ElectronDensityDatum = {
@@ -22,6 +23,10 @@ export default function useData(
     getter = getHAMData;
   } else if (dataset === Dataset.iss) {
     getter = getISSData;
+  } else if (dataset === Dataset.model) {
+    getter = getModelData;
+  } else if (dataset === Dataset.sample) {
+    getter = getSampleData;
   } else {
     console.error("This dataset is not yet supported");
     getter = getNoData;
@@ -39,7 +44,7 @@ export default function useData(
 
 async function getHAMData() {
   const response = await fetch(
-    "https://space-radio-foti.herokuapp.com/sample/spots"
+    "https://space-radio-foti.herokuapp.com/ham/spots"
   );
   const json = await response.json();
   return json;
@@ -48,6 +53,24 @@ async function getHAMData() {
 async function getISSData() {
   const response = await fetch(
     "https://space-radio-foti.herokuapp.com/iss/tec"
+  );
+  const json = await response.json();
+  return json;
+}
+
+async function getModelData() {
+  const response = await fetch(
+    "https://space-radio-foti.herokuapp.com/model/tec"
+  );
+  const json = await response.json();
+  return json;
+}
+
+async function getSampleData() {
+  const response = await fetch(
+    // "http://127.0.0.1:8000/ham/tec"
+    // "http://127.0.0.1:8000/iss/tec?sample=1"
+    "https://space-radio-foti.herokuapp.com/sample/spots"
   );
   const json = await response.json();
   return json;
