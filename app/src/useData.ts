@@ -44,7 +44,7 @@ export default function useData(
 
 async function getHAMData() {
   const response = await fetch(
-    "https://space-radio-foti.herokuapp.com/ham/spots"
+    "https://space-radio-foti.herokuapp.com/ham/tec"
   );
   const json = await response.json();
   return json;
