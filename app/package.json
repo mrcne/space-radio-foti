@@ -11,6 +11,7 @@
     "@types/node": "^16.11.62",
     "@types/react": "^18.0.21",
     "@types/react-dom": "^18.0.6",
+    "d3": "^7.6.1",
     "d3-geo": "^3.0.1",
     "grommet": "^2.26.0",
     "grommet-icons": "^4.8.0",
@@ -49,6 +50,7 @@
   "devDependencies": {
     "@types/d3": "^7.4.0",
     "@types/d3-geo": "^3.0.2",
+    "@types/geojson": "^7946.0.10",
     "@types/topojson": "^3.2.3"
   }
 }

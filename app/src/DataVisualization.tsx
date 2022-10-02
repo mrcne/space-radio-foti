@@ -5,82 +5,140 @@ import {
   GeoPermissibleObjects,
 } from "d3-geo";
 import { Box } from "grommet";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { feature } from "topojson";
+import { MultiPoint, Point } from "geojson";
+import * as d3 from "d3";
+import { interpolateSpectral } from "d3";
 
-export default function DataVisualization({
-  width = 960,
-  height = 1000,
-}: {
-  width?: number;
-  height?: number;
-}) {
+export default function DataVisualization({ size = 960 }: { size?: number }) {
+  const [data, setData] = useState<Array<ElectronDensityDatum>>();
+
   useEffect(() => {
-    renderVisualization();
-  });
+    getData().then((data) => setData(data));
+  }, []);
+
+  useEffect(() => {
+    if (data) renderVisualization(size, data);
+  }, [data, size]);
 
   return (
     <Box flex align="center" justify="center">
-      <canvas id="data-visualization" width={width} height={height}></canvas>
+      <canvas id="data-visualization" width={size} height={size}></canvas>
     </Box>
   );
+}
 
-  // https://observablehq.com/@d3/solar-terminator?collection=@d3/d3-geo
-  async function renderVisualization() {
-    const response = await fetch(
-      "https://cdn.jsdelivr.net/npm/world-atlas@2/land-50m.json"
-    );
-    const world = await response.json();
-    const land = feature(world, world.objects.land); // The land masses
-    const graticule = geoGraticule10(); // The grid of meridians and parallels
-    const sphere = { type: "Sphere" }; // An outline for the globe itself
+type ElectronDensityDatum = {
+  lat: number;
+  long: number;
+  timestamp: string;
+  value: number;
+};
 
-    const projection = geoNaturalEarth1();
+async function getData(): Promise<Array<ElectronDensityDatum>> {
+  const response = await fetch(
+    "https://space-radio-foti.herokuapp.com/sample/spots"
+  );
+  const json = await response.json();
 
-    const canvas = document.getElementById(
-      "data-visualization"
-    ) as HTMLCanvasElement;
+  // const markers: MultiPoint = {
+  //   type: "MultiPoint",
+  //   coordinates: [
+  //     [100.0, 0.0],
+  //     [101.0, 1.0],
+  //     [120.0, 92.0],
+  //     [1.0, 180.0],
+  //     [80.0, 0.0],
+  //     [201.0, 7.0],
+  //     [174.0, 0.0],
+  //   ],
+  // };
 
-    if (!canvas) throw new Error("No canvas!");
+  // const coordinates = json.map((spot: Spot) => [spot.lat, spot.long]);
+  // const markers: MultiPoint = {
+  //   type: "MultiPoint",
+  //   coordinates: coordinates,
+  // };
 
-    var context = canvas.getContext("2d");
-    if (!context) throw new Error("No 2D context!");
+  return json;
+}
 
-    fixPixellation(canvas, context, width);
+// https://observablehq.com/@d3/solar-terminator?collection=@d3/d3-geo
+async function renderVisualization(
+  size: number,
+  data: Array<ElectronDensityDatum>
+) {
+  const response = await fetch(
+    "https://cdn.jsdelivr.net/npm/world-atlas@2/land-50m.json"
+  );
+  const world = await response.json();
+  const land = feature(world, world.objects.land); // The land masses
+  const graticule = geoGraticule10(); // The grid of meridians and parallels
+  const sphere = { type: "Sphere" }; // An outline for the globe itself
 
-    // Hard-coding to center the drawing on the canvas 😭 there is definitely a smart way to do this...
-    context.translate(0, 200);
+  const projection = geoNaturalEarth1();
 
-    const path = geoPath(projection, context);
+  const canvas = document.getElementById(
+    "data-visualization"
+  ) as HTMLCanvasElement;
 
+  if (!canvas) throw new Error("No canvas!");
+
+  var context = canvas.getContext("2d");
+  if (!context) throw new Error("No 2D context!");
+
+  fixPixellation(canvas, context, size);
+
+  // Hard-coding to center the drawing on the canvas 😭 there is definitely a smart way to do this...
+  context.translate(0, 200);
+
+  const pathGenerator = geoPath(projection, context);
+
+  context.beginPath();
+  pathGenerator(graticule);
+  context.strokeStyle = "#ccc";
+  context.stroke();
+
+  context.beginPath();
+  pathGenerator(land);
+  context.fillStyle = "#000";
+  context.fill();
+
+  context.beginPath();
+  pathGenerator(sphere as GeoPermissibleObjects);
+  context.strokeStyle = "#000";
+  context.stroke();
+
+  const colorGenerator = d3
+    .scaleSequential(interpolateSpectral)
+    .domain([0, 100]);
+
+  // This is likely a very inefficient way to do this.
+  for (let datum of data) {
+    const geoPoint: Point = {
+      type: "Point",
+      coordinates: [datum.lat, datum.long],
+    };
     context.beginPath();
-    path(graticule);
-    context.strokeStyle = "#ccc";
-    context.stroke();
-
-    context.beginPath();
-    path(land);
-    context.fillStyle = "#000";
+    pathGenerator(geoPoint);
+    const color = colorGenerator(datum.value) as unknown;
+    context.fillStyle = color as string;
     context.fill();
-
-    context.beginPath();
-    path(sphere as GeoPermissibleObjects);
-    context.strokeStyle = "#000";
-    context.stroke();
   }
+}
 
-  // https://developer.mozilla.org/en-US/docs/Web/API/Window/devicePixelRatio#correcting_resolution_in_a_canvas
-  function fixPixellation(canvas: any, context: any, size: number) {
-    // Set display size (css pixels).
-    canvas.style.width = size + "px";
-    canvas.style.height = size + "px";
+// https://developer.mozilla.org/en-US/docs/Web/API/Window/devicePixelRatio#correcting_resolution_in_a_canvas
+function fixPixellation(canvas: any, context: any, size: number) {
+  // Set display size (css pixels).
+  canvas.style.width = size + "px";
+  canvas.style.height = size + "px";
 
-    // Set actual size in memory (scaled to account for extra pixel density).
-    const scale = window.devicePixelRatio; // Change to 1 on retina screens to see blurry canvas.
-    canvas.width = size * scale;
-    canvas.height = size * scale;
+  // Set actual size in memory (scaled to account for extra pixel density).
+  const scale = window.devicePixelRatio; // Change to 1 on retina screens to see blurry canvas.
+  canvas.width = size * scale;
+  canvas.height = size * scale;
 
-    // Normalize coordinate system to use css pixels.
-    context.scale(scale, scale);
-  }
+  // Normalize coordinate system to use css pixels.
+  context.scale(scale, scale);
 }
