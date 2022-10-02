@@ -149,7 +149,7 @@ function DataVisualization({
 function Controls(props: any) {
   return (
     <Box align="center" justify="center" background="brand" pad="1rem">
-      <p>2022-09-28 18:10:00 UTC</p>
+      <code>2022-09-28 18:10:00 UTC</code>
       <Box direction="row">
         <Button icon={<Previous />} />
         <Button icon={<CirclePlay size="large" />} />
