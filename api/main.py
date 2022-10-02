@@ -26,34 +26,37 @@ async def root():
 
 
 @app.get("/model/tec")
-async def model_tec(timestamp: int = None):
+async def model_tec(timestamp: int = None, sample: bool = False):
     return get_sample_spots()
 
+
 @app.get("/model/timestamps")
-async def model_tec():
+async def model_tec(sample: bool = False):
     return get_sample_timestamps()
 
 
 @app.get("/iss/tec")
-async def model_tec(timestamp: int = None):
+async def model_tec(timestamp: int = None, sample: bool = False):
     return get_sample_spots()
 
+
 @app.get("/iss/timestamps")
-async def model_tec():
+async def model_tec(sample: bool = False):
     return get_sample_timestamps()
 
 
 @app.get("/ham/tec")
-async def model_tec(timestamp: int = None):
+async def model_tec(timestamp: int = None, sample: bool = False):
     return get_sample_spots()
 
+
 @app.get("/ham/timestamps")
-async def model_tec():
+async def model_tec(sample: bool = False):
     return get_sample_timestamps()
 
 
 @app.get("/sample/spots")
-async def sample_spots(timestamp: int = None):
+async def sample_spots(timestamp: int = None, sample: bool = False):
     return get_sample_spots()
 
 
