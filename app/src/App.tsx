@@ -23,7 +23,7 @@ import logo from "./logo.jpeg";
 const theme = {
   global: {
     font: {
-      family: "Roboto",
+      family: "Inter",
       size: "18px",
       height: "20px",
     },
@@ -31,7 +31,7 @@ const theme = {
 };
 
 function App() {
-  const [showSidebar, setShowSidebar] = useState(false);
+  // const [showSidebar, setShowSidebar] = useState(false);
 
   return (
     <div className="App">
@@ -46,6 +46,7 @@ function App() {
             /> */}
             <Heading
               level="3"
+              weight="800"
               margin={{
                 top: "none",
                 right: "none",
@@ -57,7 +58,7 @@ function App() {
             </Heading>
           </AppBar>
           <Box direction="row" flex overflow={{ horizontal: "hidden" }}>
-            <Sidebar open={showSidebar} />
+            <Sidebar open={false} />
             <DataVisualization />
           </Box>
           <Controls />
@@ -74,7 +75,7 @@ function AppBar(props: any) {
       direction="row"
       align="center"
       justify="start"
-      background="brand"
+      background="light-2"
       pad={{ left: "medium", right: "small", vertical: "small" }}
       elevation="medium"
       style={{ zIndex: "1" }}
@@ -105,7 +106,7 @@ function Controls(props: any) {
     <Box
       align="center"
       justify="between"
-      background="brand"
+      background="light-1"
       pad="1rem"
       direction="row"
     >
