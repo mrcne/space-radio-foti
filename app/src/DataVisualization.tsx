@@ -5,7 +5,7 @@ import {
   GeoPermissibleObjects,
 } from "d3-geo";
 import { Box } from "grommet";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { feature } from "topojson";
 import { Point } from "geojson";
 import * as d3 from "d3";
@@ -21,9 +21,15 @@ export default function DataVisualization({
 }) {
   const [data, loading] = useData(dataset);
 
+  const domain = useMemo(() => {
+    if (dataset === Dataset.ham) return [80, 0];
+    if (dataset === Dataset.iss) return [1510000000000, 125000000000];
+    return [100, 0];
+  }, [dataset]);
+
   useEffect(() => {
-    if (data) renderVisualization(size, data);
-  }, [data, size]);
+    if (data) renderVisualization(size, data, domain);
+  }, [data, domain, size]);
 
   if (loading) return <p>Loading...</p>;
 
@@ -37,7 +43,8 @@ export default function DataVisualization({
 // https://observablehq.com/@d3/solar-terminator?collection=@d3/d3-geo
 async function renderVisualization(
   size: number,
-  data: Array<ElectronDensityDatum>
+  data: Array<ElectronDensityDatum>,
+  domain: number[]
 ) {
   const response = await fetch(
     "https://cdn.jsdelivr.net/npm/world-atlas@2/land-50m.json"
@@ -80,19 +87,17 @@ async function renderVisualization(
   context.strokeStyle = "#000";
   context.stroke();
 
-  const colorGenerator = d3
-    .scaleSequential(interpolateSpectral)
-    .domain([80, 0]); // Have to swap these around to get red as the highest.
+  const colorGenerator = d3.scaleSequential(interpolateSpectral).domain(domain); // Have to swap these around to get red as the highest.
 
   // This is likely a very inefficient way to do this.
   for (let datum of data) {
-    console.log(datum);
     const geoPoint: Point = {
       type: "Point",
       coordinates: [datum.long, datum.lat],
     };
     context.beginPath();
     pathGenerator(geoPoint);
+
     const color = colorGenerator(datum.value) as unknown;
     context.fillStyle = color as string;
     context.fill();
