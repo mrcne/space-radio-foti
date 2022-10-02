@@ -24,6 +24,7 @@ export default function DataVisualization({
   const domain = useMemo(() => {
     if (dataset === Dataset.ham) return [80, 0];
     if (dataset === Dataset.iss) return [1510000000000, 125000000000];
+    if (dataset === Dataset.model) return [9642404229, 103642404229];
     return [100, 0];
   }, [dataset]);
 
