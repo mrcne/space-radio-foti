@@ -9,16 +9,10 @@ import {
   Image,
   Tip,
 } from "grommet";
-import {
-  CirclePlay,
-  Download,
-  Menu,
-  Next,
-  Previous,
-  Upload,
-} from "grommet-icons";
+import { CirclePlay, Download, Next, Previous, Upload } from "grommet-icons";
 import DataVisualization from "./DataVisualization";
 import logo from "./logo.jpeg";
+import { Dataset } from "./useData";
 
 const theme = {
   global: {
@@ -32,6 +26,7 @@ const theme = {
 
 function App() {
   // const [showSidebar, setShowSidebar] = useState(false);
+  const [selectedDataset, setSelectedDataset] = useState(Dataset.ham);
 
   return (
     <div className="App">
@@ -59,9 +54,12 @@ function App() {
           </AppBar>
           <Box direction="row" flex overflow={{ horizontal: "hidden" }}>
             <Sidebar open={false} />
-            <DataVisualization />
+            <DataVisualization dataset={selectedDataset} />
           </Box>
-          <Controls />
+          <Controls
+            selectedDataset={selectedDataset}
+            setSelectedDataset={setSelectedDataset}
+          />
         </Box>
       </Grommet>
     </div>
@@ -101,7 +99,13 @@ function Sidebar(props: any) {
   );
 }
 
-function Controls(props: any) {
+function Controls({
+  selectedDataset,
+  setSelectedDataset,
+}: {
+  selectedDataset: Dataset;
+  setSelectedDataset: Function;
+}) {
   return (
     <Box
       align="center"
@@ -113,8 +117,8 @@ function Controls(props: any) {
       <Box width="200px" justify="start">
         <Select
           options={["HAM", "ISS", "NeQuickG"]}
-          value={"HAM"}
-          // onChange={({ option }) => setValue(option)}
+          value={selectedDataset}
+          onChange={({ option }) => setSelectedDataset(option)}
         />
       </Box>
       <Box align="center">
