@@ -6,6 +6,7 @@ import {
   Grommet,
   Collapsible,
   Select,
+  Image,
   Tip,
 } from "grommet";
 import {
@@ -17,6 +18,7 @@ import {
   Upload,
 } from "grommet-icons";
 import DataVisualization from "./DataVisualization";
+import logo from "./logo.jpeg";
 
 const theme = {
   global: {
@@ -36,10 +38,12 @@ function App() {
       <Grommet theme={theme} full>
         <Box fill>
           <AppBar>
-            <Button
+            {/* Image is public domain - https://freesvg.org/electron-image */}
+            <Image src={logo} width="50" />
+            {/* <Button
               icon={<Menu />}
               onClick={() => setShowSidebar(!showSidebar)}
-            />
+            /> */}
             <Heading
               level="3"
               margin={{
