@@ -5,63 +5,33 @@ import {
   GeoPermissibleObjects,
 } from "d3-geo";
 import { Box } from "grommet";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { feature } from "topojson";
-import { MultiPoint, Point } from "geojson";
+import { Point } from "geojson";
 import * as d3 from "d3";
 import { interpolateSpectral } from "d3";
+import useData, { Dataset, ElectronDensityDatum } from "./useData";
 
-export default function DataVisualization({ size = 960 }: { size?: number }) {
-  const [data, setData] = useState<Array<ElectronDensityDatum>>();
-
-  useEffect(() => {
-    getData().then((data) => setData(data));
-  }, []);
+export default function DataVisualization({
+  dataset,
+  size = 960,
+}: {
+  dataset: Dataset;
+  size?: number;
+}) {
+  const [data, loading] = useData(dataset);
 
   useEffect(() => {
     if (data) renderVisualization(size, data);
   }, [data, size]);
+
+  if (loading) return <p>Loading...</p>;
 
   return (
     <Box flex align="center" justify="center">
       <canvas id="data-visualization" width={size} height={size}></canvas>
     </Box>
   );
-}
-
-type ElectronDensityDatum = {
-  lat: number;
-  long: number;
-  timestamp: string;
-  value: number;
-};
-
-async function getData(): Promise<Array<ElectronDensityDatum>> {
-  const response = await fetch(
-    "https://space-radio-foti.herokuapp.com/sample/spots"
-  );
-  const json = await response.json();
-
-  // const markers: MultiPoint = {
-  //   type: "MultiPoint",
-  //   coordinates: [
-  //     [100.0, 0.0],
-  //     [101.0, 1.0],
-  //     [120.0, 92.0],
-  //     [1.0, 180.0],
-  //     [80.0, 0.0],
-  //     [201.0, 7.0],
-  //     [174.0, 0.0],
-  //   ],
-  // };
-
-  // const coordinates = json.map((spot: Spot) => [spot.lat, spot.long]);
-  // const markers: MultiPoint = {
-  //   type: "MultiPoint",
-  //   coordinates: coordinates,
-  // };
-
-  return json;
 }
 
 // https://observablehq.com/@d3/solar-terminator?collection=@d3/d3-geo
@@ -112,7 +82,7 @@ async function renderVisualization(
 
   const colorGenerator = d3
     .scaleSequential(interpolateSpectral)
-    .domain([0, 100]);
+    .domain([80, 0]); // Have to swap these around to get red as the highest.
 
   // This is likely a very inefficient way to do this.
   for (let datum of data) {
