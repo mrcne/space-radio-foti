@@ -22,7 +22,7 @@ export default function useData(
     getter = getHAMData;
   } else {
     console.error("This dataset is not yet supported");
-    getter = () => Promise.resolve([]);
+    getter = getNoData;
   }
 
   const [data, setData] = useState<Array<ElectronDensityDatum>>([]);
@@ -35,11 +35,15 @@ export default function useData(
   return [data, loading];
 }
 
-async function getHAMData(): Promise<Array<ElectronDensityDatum>> {
+async function getHAMData() {
   const response = await fetch(
     "https://space-radio-foti.herokuapp.com/sample/spots"
   );
   const json = await response.json();
 
   return json;
+}
+
+async function getNoData() {
+  return [];
 }
