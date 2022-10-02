@@ -62,16 +62,3 @@ for i in range(len(lat)):
         print(f'{lat[i]}, {lon[j]}, {N}')
 
 print(f'electron_density matrix is:\n{electron_density}')
-# Plotting
-# label = ' lat:' + str(lat) + ' lon:' + str(lon)
-# plt.plot(hs, N, label = label)
-# plt.plot(Para.hmF2,Para.NmF2 * 10 ** 11, marker = 'o', markersize=5, linestyle='None', label = 'F2 anchor pt')
-# plt.plot(Para.hmF1,Para.NmF1* 10 ** 11, marker = 'o', markersize=5, linestyle='None', label = 'F1 anchor pt')
-# plt.plot(Para.hmE,Para.NmE* 10 ** 11, marker = 'o', markersize=5, linestyle='None', label = 'E anchor pt')
-# plt.xlabel('Height(km)')
-# plt.ylabel("Electron Density (m^-3)")
-# plt.title("Nequick-G:\n" + 'mth:' + str(mth) + ' UT:' + str(UT) + ' Azr:' + str(int(Azr)))
-# plt.grid()
-# plt.legend()
-# plt.show()
-
