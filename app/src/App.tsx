@@ -112,7 +112,7 @@ function Controls(props: any) {
     >
       <Box width="200px" justify="start">
         <Select
-          options={["HAM", "ISS", "Model"]}
+          options={["HAM", "ISS", "NeQuickG"]}
           value={"HAM"}
           // onChange={({ option }) => setValue(option)}
         />
