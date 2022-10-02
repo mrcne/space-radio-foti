@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from resolver.db import get_iss_values
+from resolver.db import get_iss_values, get_ham_values, get_model_values
 from utils.sample import get_sample_spots, get_sample_timestamps
 
 app = FastAPI()
@@ -29,7 +29,11 @@ async def root():
 
 @app.get("/model/tec")
 async def model_tec(timestamp: int = None, sample: bool = False):
-    return get_sample_spots()
+    if sample:
+        return get_sample_spots()
+
+    return get_model_values()
+
 
 
 @app.get("/model/timestamps")
@@ -52,7 +56,10 @@ async def model_tec(sample: bool = False):
 
 @app.get("/ham/tec")
 async def model_tec(timestamp: int = None, sample: bool = False):
-    return get_sample_spots()
+    if sample:
+        return get_sample_spots()
+
+    return get_ham_values()
 
 
 @app.get("/ham/timestamps")

@@ -5,7 +5,7 @@ from random import randint
 def get_sample_spots(start_lat=-90.0, max_lat=90.0, start_long=-180.0, max_long=180.0, resolution=10.0):
     current_lat = start_lat
     current_long = start_long
-    timestamp = datetime.now()
+    timestamp = int(float(datetime.now().timestamp()))
 
     result = []
     # loop until max_lat and max_long with specified resolution
