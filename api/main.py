@@ -5,8 +5,8 @@ from utils.sample import get_sample_spots, get_sample_timestamps
 app = FastAPI()
 
 origins = [
-    "http://mrcne.github.io/space-radio-foti",
-    "https://mrcne.github.io/space-radio-foti",
+    "http://mrcne.github.io",
+    "https://mrcne.github.io",
     "http://localhost",
     "http://localhost:3000",
 ]
