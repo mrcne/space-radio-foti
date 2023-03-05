@@ -10,14 +10,28 @@ import { feature } from "topojson";
 import { Point } from "geojson";
 import * as d3 from "d3";
 import { interpolateSpectral } from "d3";
+import styled from "styled-components";
+
 import useData, { Dataset, ElectronDensityDatum } from "./useData";
+
+type CanvasSize = {
+  width: number,
+  height: number,
+};
+
+const StyledCanvas = styled.canvas`
+  width: 100%;
+  max-width: 800px;
+  height: auto;
+  padding: 10px 20px;
+`;
 
 export default function DataVisualization({
   dataset,
-  size = 960,
+  size = { width: 960, height: 500 },
 }: {
   dataset: Dataset;
-  size?: number;
+  size?: CanvasSize;
 }) {
   const [data, loading] = useData(dataset);
 
@@ -35,15 +49,20 @@ export default function DataVisualization({
   if (loading) return <p>Loading...</p>;
 
   return (
-    <Box flex align="center" justify="center">
-      <canvas id="data-visualization" width={size} height={size}></canvas>
+    <Box
+      flex
+      align="center"
+      margin="10px 20px"
+      justify="center"
+    >
+      <StyledCanvas id="data-visualization" width={size.width} height={size.height}></StyledCanvas>
     </Box>
   );
 }
 
 // https://observablehq.com/@d3/solar-terminator?collection=@d3/d3-geo
 async function renderVisualization(
-  size: number,
+  size: CanvasSize,
   data: Array<ElectronDensityDatum>,
   domain: number[]
 ) {
@@ -66,10 +85,7 @@ async function renderVisualization(
   var context = canvas.getContext("2d");
   if (!context) throw new Error("No 2D context!");
 
-  fixPixellation(canvas, context, size);
-
-  // Hard-coding to center the drawing on the canvas 😭 there is definitely a smart way to do this...
-  context.translate(0, 200);
+  fixPixelation(canvas, context, size);
 
   const pathGenerator = geoPath(projection, context);
 
@@ -106,15 +122,13 @@ async function renderVisualization(
 }
 
 // https://developer.mozilla.org/en-US/docs/Web/API/Window/devicePixelRatio#correcting_resolution_in_a_canvas
-function fixPixellation(canvas: any, context: any, size: number) {
-  // Set display size (css pixels).
-  canvas.style.width = size + "px";
-  canvas.style.height = size + "px";
+function fixPixelation(canvas: any, context: any, { width, height }: CanvasSize) {
+  // We set canvas style width to 100% and height to auto, to make it responsive.
 
   // Set actual size in memory (scaled to account for extra pixel density).
   const scale = window.devicePixelRatio; // Change to 1 on retina screens to see blurry canvas.
-  canvas.width = size * scale;
-  canvas.height = size * scale;
+  canvas.width = width * scale;
+  canvas.height = height * scale;
 
   // Normalize coordinate system to use css pixels.
   context.scale(scale, scale);
