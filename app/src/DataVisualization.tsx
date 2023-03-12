@@ -56,6 +56,10 @@ export default function DataVisualization({
       justify="center"
     >
       <StyledCanvas id="data-visualization" width={size.width} height={size.height}></StyledCanvas>
+      <Legend
+        label={datasetConfig.legendLabel}
+        domain={datasetConfig.domainRange}
+      />
     </Box>
   );
 }
