@@ -12,7 +12,7 @@ import {
 import { CirclePlay, Download, Next, Previous, Upload } from "grommet-icons";
 import DataVisualization from "./DataVisualization";
 import logo from "./logo.jpeg";
-import { Dataset } from "./useData";
+import { Dataset } from "./dataConfig";
 
 const theme = {
   global: {

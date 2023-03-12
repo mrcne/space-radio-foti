@@ -9,10 +9,12 @@ import { useEffect, useMemo } from "react";
 import { feature } from "topojson";
 import { Point } from "geojson";
 import * as d3 from "d3";
-import { interpolateSpectral } from "d3";
 import styled from "styled-components";
 
-import useData, { Dataset, ElectronDensityDatum } from "./useData";
+import useData, { ElectronDensityDatum } from "./useData";
+import Legend from "./Legend";
+import interpolateColors from "./utils/interpolateColors";
+import { Dataset, datasetConfigs, DatasetDisplayConfig } from "./dataConfig";
 
 type CanvasSize = {
   width: number,
@@ -35,16 +37,14 @@ export default function DataVisualization({
 }) {
   const [data, loading] = useData(dataset);
 
-  const domain = useMemo(() => {
-    if (dataset === Dataset.ham) return [80, 0];
-    if (dataset === Dataset.iss) return [1510000000000, 125000000000];
-    if (dataset === Dataset.model) return [9642404229, 103642404229];
-    return [100, 0];
+  const datasetConfig: DatasetDisplayConfig = useMemo(() => {
+    if (datasetConfigs[dataset] === undefined) return datasetConfigs[Dataset.sample];
+    return datasetConfigs[dataset];
   }, [dataset]);
 
   useEffect(() => {
-    if (data) renderVisualization(size, data, domain);
-  }, [data, domain, size]);
+    if (data) renderVisualization(size, data, datasetConfig.domainRange);
+  }, [data, datasetConfig.domainRange, size]);
 
   if (loading) return <p>Loading...</p>;
 
@@ -86,7 +86,7 @@ async function renderVisualization(
 
   if (!canvas) throw new Error("No canvas!");
 
-  var context = canvas.getContext("2d");
+  const context = canvas.getContext("2d");
   if (!context) throw new Error("No 2D context!");
 
   fixPixelation(canvas, context, size);
@@ -108,7 +108,7 @@ async function renderVisualization(
   context.strokeStyle = "#000";
   context.stroke();
 
-  const colorGenerator = d3.scaleSequential(interpolateSpectral).domain(domain); // Have to swap these around to get red as the highest.
+  const colorGenerator = d3.scaleSequential(interpolateColors).domain(domain);
 
   // This is likely a very inefficient way to do this.
   for (let datum of data) {
@@ -127,8 +127,6 @@ async function renderVisualization(
 
 // https://developer.mozilla.org/en-US/docs/Web/API/Window/devicePixelRatio#correcting_resolution_in_a_canvas
 function fixPixelation(canvas: any, context: any, { width, height }: CanvasSize) {
-  // We set canvas style width to 100% and height to auto, to make it responsive.
-
   // Set actual size in memory (scaled to account for extra pixel density).
   const scale = window.devicePixelRatio; // Change to 1 on retina screens to see blurry canvas.
   canvas.width = width * scale;
