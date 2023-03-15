@@ -51,6 +51,7 @@
     "@types/d3": "^7.4.0",
     "@types/d3-geo": "^3.0.2",
     "@types/geojson": "^7946.0.10",
+    "@types/styled-components": "^5.1.26",
     "@types/topojson": "^3.2.3"
   }
 }

@@ -9,41 +9,64 @@ import { useEffect, useMemo } from "react";
 import { feature } from "topojson";
 import { Point } from "geojson";
 import * as d3 from "d3";
-import { interpolateSpectral } from "d3";
-import useData, { Dataset, ElectronDensityDatum } from "./useData";
+import styled from "styled-components";
+
+import useData, { ElectronDensityDatum } from "./useData";
+import Legend from "./Legend";
+import interpolateColors from "./utils/interpolateColors";
+import { Dataset, datasetConfigs, DatasetDisplayConfig } from "./dataConfig";
+
+type CanvasSize = {
+  width: number,
+  height: number,
+};
+
+const StyledCanvas = styled.canvas`
+  width: 100%;
+  max-width: 800px;
+  height: auto;
+  padding: 10px 20px;
+`;
 
 export default function DataVisualization({
   dataset,
-  size = 960,
+  size = { width: 960, height: 500 },
 }: {
   dataset: Dataset;
-  size?: number;
+  size?: CanvasSize;
 }) {
   const [data, loading] = useData(dataset);
 
-  const domain = useMemo(() => {
-    if (dataset === Dataset.ham) return [80, 0];
-    if (dataset === Dataset.iss) return [1510000000000, 125000000000];
-    if (dataset === Dataset.model) return [9642404229, 103642404229];
-    return [100, 0];
+  const datasetConfig: DatasetDisplayConfig = useMemo(() => {
+    if (datasetConfigs[dataset] === undefined) return datasetConfigs[Dataset.sample];
+    return datasetConfigs[dataset];
   }, [dataset]);
 
   useEffect(() => {
-    if (data) renderVisualization(size, data, domain);
-  }, [data, domain, size]);
+    if (data) renderVisualization(size, data, datasetConfig.domainRange);
+  }, [data, datasetConfig.domainRange, size]);
 
   if (loading) return <p>Loading...</p>;
 
   return (
-    <Box flex align="center" justify="center">
-      <canvas id="data-visualization" width={size} height={size}></canvas>
+    <Box
+      flex
+      align="center"
+      margin="10px 20px"
+      justify="center"
+    >
+      <StyledCanvas id="data-visualization" width={size.width} height={size.height}></StyledCanvas>
+      <Legend
+        label={datasetConfig.legendLabel}
+        domain={datasetConfig.domainRange}
+      />
     </Box>
   );
 }
 
 // https://observablehq.com/@d3/solar-terminator?collection=@d3/d3-geo
 async function renderVisualization(
-  size: number,
+  size: CanvasSize,
   data: Array<ElectronDensityDatum>,
   domain: number[]
 ) {
@@ -63,13 +86,10 @@ async function renderVisualization(
 
   if (!canvas) throw new Error("No canvas!");
 
-  var context = canvas.getContext("2d");
+  const context = canvas.getContext("2d");
   if (!context) throw new Error("No 2D context!");
 
-  fixPixellation(canvas, context, size);
-
-  // Hard-coding to center the drawing on the canvas 😭 there is definitely a smart way to do this...
-  context.translate(0, 200);
+  fixPixelation(canvas, context, size);
 
   const pathGenerator = geoPath(projection, context);
 
@@ -88,7 +108,7 @@ async function renderVisualization(
   context.strokeStyle = "#000";
   context.stroke();
 
-  const colorGenerator = d3.scaleSequential(interpolateSpectral).domain(domain); // Have to swap these around to get red as the highest.
+  const colorGenerator = d3.scaleSequential(interpolateColors).domain(domain);
 
   // This is likely a very inefficient way to do this.
   for (let datum of data) {
@@ -106,15 +126,11 @@ async function renderVisualization(
 }
 
 // https://developer.mozilla.org/en-US/docs/Web/API/Window/devicePixelRatio#correcting_resolution_in_a_canvas
-function fixPixellation(canvas: any, context: any, size: number) {
-  // Set display size (css pixels).
-  canvas.style.width = size + "px";
-  canvas.style.height = size + "px";
-
+function fixPixelation(canvas: any, context: any, { width, height }: CanvasSize) {
   // Set actual size in memory (scaled to account for extra pixel density).
   const scale = window.devicePixelRatio; // Change to 1 on retina screens to see blurry canvas.
-  canvas.width = size * scale;
-  canvas.height = size * scale;
+  canvas.width = width * scale;
+  canvas.height = height * scale;
 
   // Normalize coordinate system to use css pixels.
   context.scale(scale, scale);

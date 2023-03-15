@@ -1,11 +1,5 @@
 import { useEffect, useState } from "react";
-
-export enum Dataset {
-  ham = "HAM",
-  iss = "ISS",
-  model = "NeQuickG",
-  sample = "Sample",
-}
+import { Dataset } from "./dataConfig";
 
 export type ElectronDensityDatum = {
   lat: number;

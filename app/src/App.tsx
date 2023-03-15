@@ -12,7 +12,7 @@ import {
 import { CirclePlay, Download, Next, Previous, Upload } from "grommet-icons";
 import DataVisualization from "./DataVisualization";
 import logo from "./logo.jpeg";
-import { Dataset } from "./useData";
+import { Dataset } from "./dataConfig";
 
 const theme = {
   global: {
@@ -26,7 +26,7 @@ const theme = {
 
 function App() {
   // const [showSidebar, setShowSidebar] = useState(false);
-  const [selectedDataset, setSelectedDataset] = useState(Dataset.iss);
+  const [selectedDataset, setSelectedDataset] = useState(Dataset.model);
 
   return (
     <div className="App">
@@ -122,7 +122,7 @@ function Controls({
         />
       </Box>
       <Box align="center">
-        <code>2022-09-28 18:10:00 UTC</code>
+        <code>2017-01-01 18:10:00 UTC</code>
         <Box direction="row">
           <Button icon={<Previous />} />
           <Button icon={<CirclePlay size="large" />} />
